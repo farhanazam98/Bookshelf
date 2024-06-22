@@ -1,3 +1,9 @@
+import org.gradle.initialization.Environment
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
+import org.jetbrains.kotlin.gradle.utils.loadPropertyFromResources
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -17,6 +23,15 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+        buildFeatures {
+            buildConfig = true
+        }
+        val apiKeyPropertiesFile = rootProject.file("local.properties")
+        if (apiKeyPropertiesFile.exists()){
+            val properties = Properties()
+            properties.load(FileInputStream(apiKeyPropertiesFile))
+            buildConfigField("String", "API_KEY", "\"${properties["API_KEY"]}\"")
         }
     }
 

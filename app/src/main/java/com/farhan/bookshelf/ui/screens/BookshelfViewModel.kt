@@ -15,18 +15,12 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-data class BookshelfUiState(val books: List<String> = listOf(), val state: State)
-
-enum class State {
-    LOADING,
-    LOADED,
-}
-
+data class BookshelfUiState(val books: List<String> = listOf())
 
 
 class BookshelfViewModel: ViewModel() {
 
-    private val _uiState = MutableStateFlow(BookshelfUiState(state = State.LOADING))
+    private val _uiState = MutableStateFlow(BookshelfUiState())
     val uiState = _uiState.asStateFlow()
 
     init {
@@ -35,25 +29,14 @@ class BookshelfViewModel: ViewModel() {
             val booksResponseCall = BookshelfApi.retrofitService.getBooks()
             booksResponseCall.enqueue(
                 object : Callback<BookResponse> {
-                    override fun onResponse(p0: Call<BookResponse>, p1: Response<BookResponse>) {
-                        Log.d("BookShelfViewModel", "made it")
-                        Log.d("BookshelfViewModel", p1.toString())
-                        val bookNames: MutableList<String> = mutableListOf()
-                        p1.body()?.items?.forEach { bookItem ->
-                            bookItem.volumeInfo.title.let { title ->
-                                bookNames.add(title)
+                    override fun onResponse(call: Call<BookResponse>, response: Response<BookResponse>) {
+                        response.body()?.items?.map { it.volumeInfo.title }?.also { titles ->
+                            if (titles.isNotEmpty()) {
+                                _uiState.update { it.copy(books = titles) }
                             }
-                            Log.d("BookShelfViewModel", "made it 2")
-
-                        }
-                        if (bookNames.isNotEmpty()) {
-                            Log.d("BookShelfViewModel", "made it 3")
-
-                            _uiState.update { it.copy(books = bookNames) }
                         }
                     }
-
-                    override fun onFailure(p0: Call<BookResponse>, p1: Throwable) {
+                    override fun onFailure(call: Call<BookResponse>, throwable: Throwable) {
 
                     }
 

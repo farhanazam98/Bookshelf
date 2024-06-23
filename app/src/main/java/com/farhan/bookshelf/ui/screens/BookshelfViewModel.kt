@@ -5,6 +5,7 @@ import android.widget.ArrayAdapter
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.farhan.bookshelf.data.NetworkBookshelfRepository
 import com.farhan.bookshelf.model.BookResponse
 import com.farhan.bookshelf.network.BookshelfApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,7 @@ class BookshelfViewModel: ViewModel() {
     init {
         _uiState.update { it.copy(books = listOf("Moby Dick", "Tom Sawyer")) }
         viewModelScope.launch {
-            val booksResponseCall = BookshelfApi.retrofitService.getBooks()
+            val booksResponseCall = NetworkBookshelfRepository().getBooks()
             booksResponseCall.enqueue(
                 object : Callback<BookResponse> {
                     override fun onResponse(call: Call<BookResponse>, response: Response<BookResponse>) {

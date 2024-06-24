@@ -2,7 +2,10 @@ package com.farhan.bookshelf.ui.screens
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -24,7 +27,7 @@ import com.farhan.bookshelf.ui.theme.BookshelfTheme
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier, books: List<VolumeInfo>) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier = modifier, ) {
         items(books) { it: VolumeInfo ->
             BookCard(bookInfo = it)
         }
@@ -42,26 +45,27 @@ fun BookCard(
             "http",
             "https"
         ) else "https://fakeimg.pl/200x250?text=No+cover&font=bebas"
-    Card {
-        Column(
-            modifier = Modifier.padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+    Card(
+
+    ) {
+        Row(
+            modifier = Modifier.padding(8.dp).fillMaxWidth(),
         ) {
             AsyncImage(
                 model = resolvedUrl,
                 contentDescription = null,
                 placeholder = painterResource(placeholder)
             )
-            Text(
-                text = "Title: ${bookInfo.title}",
-                style = MaterialTheme.typography.labelMedium,
-            )
-            Text(
-                text = "Author(s): $authorsString",
-                style = MaterialTheme.typography.labelSmall,
-                textAlign = TextAlign.Center
-
-            )
+            Column(modifier = Modifier.padding(all = 4.dp)){
+                Text(
+                    text = "Title:\n${bookInfo.title}",
+                    style = MaterialTheme.typography.labelMedium,
+                )
+                Text(
+                    text = "Author(s): \n$authorsString",
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
         }
     }
 

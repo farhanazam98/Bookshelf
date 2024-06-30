@@ -10,6 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 // Add logging
 val logging = HttpLoggingInterceptor().apply {
@@ -27,8 +28,9 @@ private val retrofit = Retrofit.Builder()
 private const val API_KEY = BuildConfig.API_KEY
 
 interface BookshelfApiService {
-    @GET("volumes/?q=jazz+history&key=$API_KEY")
-     fun getBooks(): Call<BookListResponse>
+    @GET("volumes/")
+     fun getBooks(@Query("q", encoded = true) searchQuery: String): Call<BookListResponse>
+
 
     @GET("volumes/{id}?key=$API_KEY")
     fun getBook(@Path("id") bookId: String): Call<BookResponse>

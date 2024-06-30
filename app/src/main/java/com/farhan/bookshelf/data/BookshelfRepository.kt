@@ -6,15 +6,15 @@ import com.farhan.bookshelf.network.BookshelfApi
 import retrofit2.Call
 
 interface BookshelfRepository {
-    fun getBooks(): Call<BookListResponse>
+    fun getBooks(searchQuery: String): Call<BookListResponse>
     fun getBook(bookId: String): Call<BookResponse>
 
 }
 
 
 class NetworkBookshelfRepository: BookshelfRepository{
-    override fun getBooks(): Call<BookListResponse> {
-        return BookshelfApi.retrofitService.getBooks()
+    override fun getBooks(searchQuery: String): Call<BookListResponse> {
+        return BookshelfApi.retrofitService.getBooks(searchQuery)
     }
 
     override fun getBook(bookId: String): Call<BookResponse> {

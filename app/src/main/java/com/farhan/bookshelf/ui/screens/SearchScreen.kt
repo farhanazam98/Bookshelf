@@ -50,7 +50,7 @@ fun SearchScreen(onSearch: (String) -> Unit) {
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(
                     onSearch = {
-                        onSearch("asdf")
+                        onSearch(editMessage.value)
                         keyboardController?.hide()
                     }
                 )

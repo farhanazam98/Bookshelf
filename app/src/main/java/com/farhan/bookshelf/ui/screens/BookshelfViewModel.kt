@@ -1,5 +1,6 @@
 package com.farhan.bookshelf.ui.screens
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.farhan.bookshelf.data.NetworkBookshelfRepository
@@ -36,7 +37,8 @@ class BookshelfViewModel: ViewModel() {
     fun fetchBooks(searchQuery: String){
         _uiState.update { it.copy(state = BookSearchState.Loading) }
         viewModelScope.launch {
-            val booksResponseCall = bookshelfRepository.getBooks()
+            val formattedQuery = formatQuery(searchQuery)
+            val booksResponseCall = bookshelfRepository.getBooks(formattedQuery)
 
             booksResponseCall.enqueue(
                 object : Callback<BookListResponse> {
@@ -47,12 +49,16 @@ class BookshelfViewModel: ViewModel() {
                         }
                     }
                     override fun onFailure(call: Call<BookListResponse>, throwable: Throwable) {
-
+                        Log.d(TAG, throwable.toString())
                     }
 
                 }
             )
         }
+    }
+
+    private fun formatQuery(searchQuery: String): String {
+        return searchQuery.trim().replace(" ", "+")
     }
 
 

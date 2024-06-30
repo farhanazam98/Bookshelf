@@ -26,12 +26,25 @@ import com.farhan.bookshelf.ui.theme.BookshelfTheme
 
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier, books: List<VolumeInfo>) {
-    LazyColumn(modifier = modifier, ) {
-        items(books) { it: VolumeInfo ->
-            BookCard(bookInfo = it)
+fun MainScreen(modifier: Modifier = Modifier, bookImageUrls: List<String>) {
+    LazyColumn(modifier = modifier) {
+        items(bookImageUrls) { it: String ->
+//            BookCard(bookInfo = it)
+            Book(it)
         }
     }
+}
+
+@Composable
+fun Book(imageUrl: String,
+         @DrawableRes placeholder: Int = R.drawable.loading_img,
+) {
+    val formattedUrl = imageUrl.replace("http", "https")
+    AsyncImage(
+        model = formattedUrl,
+        contentDescription = null,
+        placeholder = painterResource(placeholder)
+    )
 }
 
 @Composable
@@ -40,14 +53,13 @@ fun BookCard(
     @DrawableRes placeholder: Int = R.drawable.loading_img,
 ) {
     val authorsString = bookInfo.authors.joinToString(", \n")
+    // remove assertion
     val resolvedUrl: String =
-        if (bookInfo.imageLinks != null) bookInfo.imageLinks.thumbnail.replace(
+        if (bookInfo.imageLinks != null) bookInfo.imageLinks.thumbnail?.replace(
             "http",
             "https"
-        ) else "https://fakeimg.pl/200x250?text=No+cover&font=bebas"
-    Card(
-
-    ) {
+        )!! else "https://fakeimg.pl/200x250?text=No+cover&font=bebas"
+    Card {
         Row(
             modifier = Modifier.padding(8.dp).fillMaxWidth(),
         ) {

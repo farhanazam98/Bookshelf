@@ -1,23 +1,24 @@
 package com.farhan.bookshelf.ui.screens
 
 import android.util.Log
-import android.widget.ArrayAdapter
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.farhan.bookshelf.data.NetworkBookshelfRepository
+import com.farhan.bookshelf.model.BookItem
 import com.farhan.bookshelf.model.BookResponse
 import com.farhan.bookshelf.model.VolumeInfo
-import com.farhan.bookshelf.network.BookshelfApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
 
-data class BookshelfUiState(val books: List<VolumeInfo> = listOf())
+data class BookshelfUiState(val bookImageUrls: List<String> = listOf())
 
 
 class BookshelfViewModel: ViewModel() {
@@ -25,15 +26,18 @@ class BookshelfViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(BookshelfUiState())
     val uiState = _uiState.asStateFlow()
 
+    private val bookshelfRepository = NetworkBookshelfRepository()
+
     init {
         viewModelScope.launch {
-            val booksResponseCall = NetworkBookshelfRepository().getBooks()
+            val booksResponseCall = bookshelfRepository.getBooks()
+
             booksResponseCall.enqueue(
                 object : Callback<BookResponse> {
                     override fun onResponse(call: Call<BookResponse>, response: Response<BookResponse>) {
-                        val books  = response.body()?.items?.map { it.volumeInfo }
+                        val books  = response.body()?.items
                         if (books != null) {
-                            _uiState.update { it.copy(books = books)}
+                            fetchIndividualBooks(books)
                         }
                     }
                     override fun onFailure(call: Call<BookResponse>, throwable: Throwable) {
@@ -44,6 +48,39 @@ class BookshelfViewModel: ViewModel() {
             )
         }
 
+    }
+
+
+    private fun fetchIndividualBooks(books: List<BookItem>?) {
+        viewModelScope.launch {
+            val bookImageUrls: ArrayList<String> = arrayListOf()
+            withContext(Dispatchers.IO) {
+                books?.forEach { bookItem ->
+                    val bookCall = bookshelfRepository.getBook(bookItem.id)
+                    try {
+                        val response = bookCall.execute()
+                        if (response.isSuccessful) {
+                            response.body()?.volumeInfo?.imageLinks?.medium?.let {
+                                bookImageUrls.add(it)
+                            }
+                        } else {
+
+                            println("Error: ${response.code()} ${response.message()}")
+                        }
+                    } catch (e: IOException) {
+
+                        println("Network error: ${e.message}")
+                    }
+
+                }
+                _uiState.update { it.copy(bookImageUrls = bookImageUrls) }
+
+            }
+        }
+    }
+
+    private companion object{
+        const val TAG = "BookshelfViewModel"
     }
 
 }

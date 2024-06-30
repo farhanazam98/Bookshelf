@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
             BookshelfTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     MainScreen(
-                        books= bookshelfViewModel.uiState.collectAsState().value.books,
+                        bookImageUrls = bookshelfViewModel.uiState.collectAsState().value.bookImageUrls,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

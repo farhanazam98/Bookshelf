@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -25,15 +24,15 @@ import androidx.compose.ui.unit.dp
 
 @Preview(showBackground = true)
 @Composable
-fun ComposeEditModalPreview() {
-    SearchScreen()
+fun SearchScreenPreview() {
+    SearchScreen {  }
 }
 
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier) {
+fun SearchScreen(onSearch: (String) -> Unit) {
     val editMessage = remember { mutableStateOf("") }
     Column(
-        modifier = modifier
+        modifier = Modifier
             .clip(RoundedCornerShape(4.dp))
             .background(MaterialTheme.colorScheme.background)
             .padding(8.dp),
@@ -51,6 +50,7 @@ fun SearchScreen(modifier: Modifier = Modifier) {
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(
                     onSearch = {
+                        onSearch("asdf")
                         keyboardController?.hide()
                     }
                 )

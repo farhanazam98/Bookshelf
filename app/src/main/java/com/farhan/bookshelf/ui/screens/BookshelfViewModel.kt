@@ -16,17 +16,25 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
 
-data class BookshelfUiState(val bookImageUrls: List<String> = listOf())
+data class BookshelfUiState(val searchQuery: String = "", val bookImageUrls: List<String> = listOf(), val state: BookSearchState)
 
+sealed class BookSearchState {
+    data object Initial : BookSearchState()
+    data object Loading : BookSearchState()
+    data class Loaded(val bookImageUrls: List<String>) : BookSearchState()
+    data class Error(val message: String) : BookSearchState()
+    data object Empty : BookSearchState()
+}
 
 class BookshelfViewModel: ViewModel() {
 
-    private val _uiState = MutableStateFlow(BookshelfUiState())
+    private val _uiState = MutableStateFlow(BookshelfUiState(state = BookSearchState.Initial))
     val uiState = _uiState.asStateFlow()
 
     private val bookshelfRepository = NetworkBookshelfRepository()
 
-    init {
+    fun fetchBooks(searchQuery: String){
+        _uiState.update { it.copy(state = BookSearchState.Loading) }
         viewModelScope.launch {
             val booksResponseCall = bookshelfRepository.getBooks()
 
@@ -45,7 +53,6 @@ class BookshelfViewModel: ViewModel() {
                 }
             )
         }
-
     }
 
 
@@ -71,8 +78,7 @@ class BookshelfViewModel: ViewModel() {
                     }
 
                 }
-                _uiState.update { it.copy(bookImageUrls = bookImageUrls) }
-
+                _uiState.update { it.copy(bookImageUrls = bookImageUrls, state = BookSearchState.Loaded(bookImageUrls)) }
             }
         }
     }

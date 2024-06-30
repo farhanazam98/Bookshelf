@@ -1,8 +1,8 @@
 package com.farhan.bookshelf.network
 
 import com.farhan.bookshelf.BuildConfig
-import com.farhan.bookshelf.model.BookItem
 import com.farhan.bookshelf.model.BookResponse
+import com.farhan.bookshelf.model.BookListResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -28,10 +28,10 @@ private const val API_KEY = BuildConfig.API_KEY
 
 interface BookshelfApiService {
     @GET("volumes/?q=jazz+history&key=$API_KEY")
-     fun getBooks(): Call<BookResponse>
+     fun getBooks(): Call<BookListResponse>
 
     @GET("volumes/{id}?key=$API_KEY")
-    fun getBook(@Path("id") bookId: String): Call<BookItem>
+    fun getBook(@Path("id") bookId: String): Call<BookResponse>
 
 }
 

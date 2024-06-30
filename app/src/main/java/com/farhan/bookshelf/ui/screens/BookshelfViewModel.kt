@@ -1,12 +1,10 @@
 package com.farhan.bookshelf.ui.screens
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.farhan.bookshelf.data.NetworkBookshelfRepository
-import com.farhan.bookshelf.model.BookItem
 import com.farhan.bookshelf.model.BookResponse
-import com.farhan.bookshelf.model.VolumeInfo
+import com.farhan.bookshelf.model.BookListResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,14 +31,14 @@ class BookshelfViewModel: ViewModel() {
             val booksResponseCall = bookshelfRepository.getBooks()
 
             booksResponseCall.enqueue(
-                object : Callback<BookResponse> {
-                    override fun onResponse(call: Call<BookResponse>, response: Response<BookResponse>) {
+                object : Callback<BookListResponse> {
+                    override fun onResponse(call: Call<BookListResponse>, response: Response<BookListResponse>) {
                         val books  = response.body()?.items
                         if (books != null) {
                             fetchIndividualBooks(books)
                         }
                     }
-                    override fun onFailure(call: Call<BookResponse>, throwable: Throwable) {
+                    override fun onFailure(call: Call<BookListResponse>, throwable: Throwable) {
 
                     }
 
@@ -51,7 +49,7 @@ class BookshelfViewModel: ViewModel() {
     }
 
 
-    private fun fetchIndividualBooks(books: List<BookItem>?) {
+    private fun fetchIndividualBooks(books: List<BookResponse>?) {
         viewModelScope.launch {
             val bookImageUrls: ArrayList<String> = arrayListOf()
             withContext(Dispatchers.IO) {

@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.farhan.bookshelf.ui.screens.BookSearchState
 import com.farhan.bookshelf.ui.screens.BookshelfViewModel
+import com.farhan.bookshelf.ui.screens.EmptyResultsScreen
 import com.farhan.bookshelf.ui.screens.LoadingScreen
 import com.farhan.bookshelf.ui.screens.ResultsScreen
 import com.farhan.bookshelf.ui.screens.SearchScreen
@@ -43,7 +44,7 @@ class MainActivity : ComponentActivity() {
                             is BookSearchState.Initial -> SearchScreen { searchQuery: String ->
                                 bookshelfViewModel.fetchBooks(searchQuery)
                             }
-                            BookSearchState.Empty -> TODO()
+                            BookSearchState.Empty -> EmptyResultsScreen(query = uiState.searchQuery)
                             is BookSearchState.Error -> TODO()
                             is BookSearchState.Loaded -> ResultsScreen(bookImageUrls = uiState.bookImageUrls)
                             BookSearchState.Loading -> LoadingScreen()
